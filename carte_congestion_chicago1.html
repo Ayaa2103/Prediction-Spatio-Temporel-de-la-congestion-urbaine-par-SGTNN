@@ -1,0 +1,1790 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_41e794e5a8a3273caf834a33b4604333 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdn.jsdelivr.net/gh/python-visualization/folium@main/folium/templates/leaflet_heat.min.js"></script>
+</head>
+<body>
+    
+    
+<div style="position:fixed; top:15px; left:50%; transform:translateX(-50%);
+     z-index:1000; background:rgba(10,22,40,0.92);
+     padding:12px 24px; border-radius:10px;
+     border:2px solid #00C8FF; color:white;
+     font-family:Arial; font-size:16px; font-weight:bold;
+     text-align:center; box-shadow: 0 0 15px #00C8FF44">
+     🗺️ Prédiction Spatio-Temporelle — Congestion Chicago<br>
+     <span style='font-size:12px; color:#00C8FF; font-weight:normal'>
+     Modèle STGNN | 200 capteurs | 2013–2018
+     </span>
+</div>
+    
+<div style="position:fixed; bottom:30px; left:20px; z-index:1000;
+     background:rgba(10,22,40,0.92); padding:15px; border-radius:10px;
+     border:1px solid #00C8FF; color:white;
+     font-family:Arial; font-size:13px;
+     box-shadow: 0 0 10px #00000088">
+  <b style="color:#00C8FF; font-size:14px">🚦 Niveau de Congestion</b><br><br>
+  <span style='color:#FF0000'>██</span> &lt; 12 km/h — <b>Bloqué</b><br>
+  <span style='color:#FF4500'>██</span> 12–18 km/h — <b>Très lent</b><br>
+  <span style='color:#FF8C00'>██</span> 18–22 km/h — <b>Congestionné</b><br>
+  <span style='color:#FFD700'>██</span> 22–28 km/h — <b>Ralenti</b><br>
+  <span style='color:#9ACD32'>██</span> 28–35 km/h — <b>Fluide</b><br>
+  <span style='color:#00C851'>██</span> &gt; 35 km/h — <b>Libre</b><br><br>
+  <span style='color:#888; font-size:11px'>
+  💡 Cliquez sur une zone pour les détails<br>
+  🔵 Taille du point = niveau de congestion
+  </span>
+</div>
+    
+<div style="position:fixed; bottom:30px; right:20px; z-index:1000;
+     background:rgba(10,22,40,0.92); padding:15px; border-radius:10px;
+     border:1px solid #8B5CF6; color:white;
+     font-family:Arial; font-size:13px">
+  <b style="color:#8B5CF6; font-size:14px">📊 Statistiques</b><br><br>
+  Vitesse min   : <b style='color:#FF4444'>15.9 km/h</b><br>
+  Vitesse max   : <b style='color:#00C851'>29.5 km/h</b><br>
+  Vitesse moy   : <b style='color:#FFD700'>22.9 km/h</b><br>
+  Zones totales : <b style='color:#00C8FF'>29</b><br><br>
+  <b style='color:#10B981'>Modèle : MAE = 2.18 km/h</b><br>
+  <b style='color:#10B981'>R² = 0.825</b>
+</div>
+    
+            <div class="folium-map" id="map_41e794e5a8a3273caf834a33b4604333" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_41e794e5a8a3273caf834a33b4604333 = L.map(
+                "map_41e794e5a8a3273caf834a33b4604333",
+                {
+                    center: [41.87, -87.73],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 11,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_efe7760297823da9890ae17946693fae = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_efe7760297823da9890ae17946693fae.addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var rectangle_a5824e4e212e7f5da93857089f1613ea = L.rectangle(
+                [[41.960669, -87.84621], [42.0190998, -87.747456]],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_0730b9fa5255b5599208b399784004c4 = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_eb07e18cbf8e431c2ba0ee6eafe09b52 = $(`<div id="html_eb07e18cbf8e431c2ba0ee6eafe09b52" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>North of Montrose. East River to Cicero</b><br><hr>             🚗 Vitesse moy : <b>26.9 km/h</b><br>             🔴 Congestion  : <b>55%</b><br>             📍 Région ID   : 2             </div></div>`)[0];
+                popup_0730b9fa5255b5599208b399784004c4.setContent(html_eb07e18cbf8e431c2ba0ee6eafe09b52);
+            
+        
+
+        rectangle_a5824e4e212e7f5da93857089f1613ea.bindPopup(popup_0730b9fa5255b5599208b399784004c4)
+        ;
+
+        
+    
+    
+            rectangle_a5824e4e212e7f5da93857089f1613ea.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>North of Montrose. East River to Cicero</b><br>🚗 26.9 km/h  |  🔴 55% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6bbf6f7dae56986ed72293c56c17cc1a = L.circleMarker(
+                [41.9898844, -87.79683299999999],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 19.033238095238094, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_5f84feb64948c55e3cdbd06d44a8abf1 = L.marker(
+                [41.9898844, -87.79683299999999],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_7e1675b04866021532df1668539910be = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                27 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_5f84feb64948c55e3cdbd06d44a8abf1.setIcon(div_icon_7e1675b04866021532df1668539910be);
+            
+    
+            var rectangle_66a4f1cd0adacda7e67e4f85b895f608 = L.rectangle(
+                [[41.960669, -87.747456], [41.997946, -87.67459]],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF8C00", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_f951d588886bf025bc4e860f3d4d4e1a = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_60deced5fbbd78ce251025e841057e06 = $(`<div id="html_60deced5fbbd78ce251025e841057e06" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>Montrose to Devon. Cicero to Ravenswood</b><br><hr>             🚗 Vitesse moy : <b>20.2 km/h</b><br>             🔴 Congestion  : <b>66%</b><br>             📍 Région ID   : 3             </div></div>`)[0];
+                popup_f951d588886bf025bc4e860f3d4d4e1a.setContent(html_60deced5fbbd78ce251025e841057e06);
+            
+        
+
+        rectangle_66a4f1cd0adacda7e67e4f85b895f608.bindPopup(popup_f951d588886bf025bc4e860f3d4d4e1a)
+        ;
+
+        
+    
+    
+            rectangle_66a4f1cd0adacda7e67e4f85b895f608.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>Montrose to Devon. Cicero to Ravenswood</b><br>🚗 20.2 km/h  |  🔴 66% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_dc8e4931f77eebaec8267dbbf670b673 = L.circleMarker(
+                [41.979307500000004, -87.711023],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF8C00", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 21.25372549019608, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_85ae62cd7482b9ef270dd8a0cba64e25 = L.marker(
+                [41.979307500000004, -87.711023],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_c393348733b301ca52c40415668ab817 = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                20 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_85ae62cd7482b9ef270dd8a0cba64e25.setIcon(div_icon_c393348733b301ca52c40415668ab817);
+            
+    
+            var rectangle_8c4c856c3af5cf0df2ea5eca36e06002 = L.rectangle(
+                [[41.960669, -87.67459], [41.997946, -87.646438]],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF8C00", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_cf4be8e95461a98e403af66fcacd0758 = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_82dfdbf48483affcb3a76898c310259c = $(`<div id="html_82dfdbf48483affcb3a76898c310259c" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>Montrose to Devon. Ravenswood to Lake Shore</b><br><hr>             🚗 Vitesse moy : <b>20.2 km/h</b><br>             🔴 Congestion  : <b>66%</b><br>             📍 Région ID   : 4             </div></div>`)[0];
+                popup_cf4be8e95461a98e403af66fcacd0758.setContent(html_82dfdbf48483affcb3a76898c310259c);
+            
+        
+
+        rectangle_8c4c856c3af5cf0df2ea5eca36e06002.bindPopup(popup_cf4be8e95461a98e403af66fcacd0758)
+        ;
+
+        
+    
+    
+            rectangle_8c4c856c3af5cf0df2ea5eca36e06002.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>Montrose to Devon. Ravenswood to Lake Shore</b><br>🚗 20.2 km/h  |  🔴 66% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_466e192c7f3a7b25746e4111490b77bb = L.circleMarker(
+                [41.979307500000004, -87.660514],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF8C00", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 21.267164179104476, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_9e6daf6f5f0e44c6ad4ea570c849aac3 = L.marker(
+                [41.979307500000004, -87.660514],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_95723ae4d3b82a6df65c06e3c96f1025 = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                20 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_9e6daf6f5f0e44c6ad4ea570c849aac3.setIcon(div_icon_95723ae4d3b82a6df65c06e3c96f1025);
+            
+    
+            var rectangle_676c6c3130d56db0e27ebb091d22cab0 = L.rectangle(
+                [[41.931841, -87.747456], [41.960669, -87.67459]],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF8C00", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_050c6b1588f4d9ed1b01891974646fb9 = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_800cbb785b00af103bcabe64b40eb841 = $(`<div id="html_800cbb785b00af103bcabe64b40eb841" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>Diversey to Montrose. Cicero to Ravenswood</b><br><hr>             🚗 Vitesse moy : <b>19.4 km/h</b><br>             🔴 Congestion  : <b>68%</b><br>             📍 Région ID   : 6             </div></div>`)[0];
+                popup_050c6b1588f4d9ed1b01891974646fb9.setContent(html_800cbb785b00af103bcabe64b40eb841);
+            
+        
+
+        rectangle_676c6c3130d56db0e27ebb091d22cab0.bindPopup(popup_050c6b1588f4d9ed1b01891974646fb9)
+        ;
+
+        
+    
+    
+            rectangle_676c6c3130d56db0e27ebb091d22cab0.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>Diversey to Montrose. Cicero to Ravenswood</b><br>🚗 19.4 km/h  |  🔴 68% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_564cd840bc259198770f59df0b9dc5ed = L.circleMarker(
+                [41.946255, -87.711023],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF8C00", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 21.51812785388128, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_9f527afb25e00962ad171b6f8004faf7 = L.marker(
+                [41.946255, -87.711023],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_d6b0a0582d117a31f71c3befab11fe8c = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                19 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_9f527afb25e00962ad171b6f8004faf7.setIcon(div_icon_d6b0a0582d117a31f71c3befab11fe8c);
+            
+    
+            var rectangle_a53193ab8536d7684ef90d533a80f36a = L.rectangle(
+                [[41.909269, -87.747456], [41.931841, -87.67459]],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF8C00", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_6e4940a947f64f0c315f41e192f3c693 = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_5b3b1558dead4d2c5af4867117a5e99f = $(`<div id="html_5b3b1558dead4d2c5af4867117a5e99f" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>North Ave to Diversy. Cicero to Ravenswood</b><br><hr>             🚗 Vitesse moy : <b>20.5 km/h</b><br>             🔴 Congestion  : <b>66%</b><br>             📍 Région ID   : 7             </div></div>`)[0];
+                popup_6e4940a947f64f0c315f41e192f3c693.setContent(html_5b3b1558dead4d2c5af4867117a5e99f);
+            
+        
+
+        rectangle_a53193ab8536d7684ef90d533a80f36a.bindPopup(popup_6e4940a947f64f0c315f41e192f3c693)
+        ;
+
+        
+    
+    
+            rectangle_a53193ab8536d7684ef90d533a80f36a.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>North Ave to Diversy. Cicero to Ravenswood</b><br>🚗 20.5 km/h  |  🔴 66% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_16e6c2b04130cd00fc27a27c380ddd78 = L.circleMarker(
+                [41.920555, -87.711023],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF8C00", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 21.163896713615024, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_dd8c580f6e32a0b5d0035865dd5ea19b = L.marker(
+                [41.920555, -87.711023],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_3424cf85c6ba941dd6b1d970976a5eb0 = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                21 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_dd8c580f6e32a0b5d0035865dd5ea19b.setIcon(div_icon_3424cf85c6ba941dd6b1d970976a5eb0);
+            
+    
+            var rectangle_a30681a4dbe5bc27e61ef0ac7d09d03f = L.rectangle(
+                [[41.910561, -87.67459], [41.960669, -87.619112]],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF8C00", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_adfc6cecb4ab6aa59728333208d1010e = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_fd9bea9c6781fe0c92df885d8b437dc1 = $(`<div id="html_fd9bea9c6781fe0c92df885d8b437dc1" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>North Ave to Montrose. Ravenswood to Lake Shore</b><br><hr>             🚗 Vitesse moy : <b>19.8 km/h</b><br>             🔴 Congestion  : <b>67%</b><br>             📍 Région ID   : 8             </div></div>`)[0];
+                popup_adfc6cecb4ab6aa59728333208d1010e.setContent(html_fd9bea9c6781fe0c92df885d8b437dc1);
+            
+        
+
+        rectangle_a30681a4dbe5bc27e61ef0ac7d09d03f.bindPopup(popup_adfc6cecb4ab6aa59728333208d1010e)
+        ;
+
+        
+    
+    
+            rectangle_a30681a4dbe5bc27e61ef0ac7d09d03f.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>North Ave to Montrose. Ravenswood to Lake Shore</b><br>🚗 19.8 km/h  |  🔴 67% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2bbe8d96f115e5234d14e067ddcb2efa = L.circleMarker(
+                [41.935615, -87.646851],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF8C00", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 21.405472636815922, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_bdd84c96d7a6072016a242c5e4e1a912 = L.marker(
+                [41.935615, -87.646851],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_bdb59b60f8ae7591914c5cd133195597 = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                20 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_bdd84c96d7a6072016a242c5e4e1a912.setIcon(div_icon_bdb59b60f8ae7591914c5cd133195597);
+            
+    
+            var rectangle_b32eb495cfb2bd7f9ce172d527e803e7 = L.rectangle(
+                [[41.866129, -87.775947], [41.909269, -87.747456]],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_3874f07fdb738087e1cec5992c205e01 = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_d07f09d2d8877eca31160e1a401e63c2 = $(`<div id="html_d07f09d2d8877eca31160e1a401e63c2" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>Roosevelt to North Ave. Austin to Cicero</b><br><hr>             🚗 Vitesse moy : <b>22.2 km/h</b><br>             🔴 Congestion  : <b>63%</b><br>             📍 Région ID   : 9             </div></div>`)[0];
+                popup_3874f07fdb738087e1cec5992c205e01.setContent(html_d07f09d2d8877eca31160e1a401e63c2);
+            
+        
+
+        rectangle_b32eb495cfb2bd7f9ce172d527e803e7.bindPopup(popup_3874f07fdb738087e1cec5992c205e01)
+        ;
+
+        
+    
+    
+            rectangle_b32eb495cfb2bd7f9ce172d527e803e7.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>Roosevelt to North Ave. Austin to Cicero</b><br>🚗 22.2 km/h  |  🔴 63% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_05ee87b76060bb4917293553b767988d = L.circleMarker(
+                [41.887699, -87.7617015],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 20.584299516908214, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_e11835262e06f2ac25a08a4312c1ec28 = L.marker(
+                [41.887699, -87.7617015],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_50068335d8fe3058421ba334cf2c824b = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                22 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_e11835262e06f2ac25a08a4312c1ec28.setIcon(div_icon_50068335d8fe3058421ba334cf2c824b);
+            
+    
+            var rectangle_ea214b38496bbabaf0657ade6f9f743f = L.rectangle(
+                [[41.866129, -87.747456], [41.909269, -87.691617]],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF8C00", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_01397fdff12293432b6beafd06476db9 = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_d680c6cd103dbe117abbd1a0eada8920 = $(`<div id="html_d680c6cd103dbe117abbd1a0eada8920" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>Roosevelt to North Ave. Cicero to Rockwell</b><br><hr>             🚗 Vitesse moy : <b>20.4 km/h</b><br>             🔴 Congestion  : <b>66%</b><br>             📍 Région ID   : 10             </div></div>`)[0];
+                popup_01397fdff12293432b6beafd06476db9.setContent(html_d680c6cd103dbe117abbd1a0eada8920);
+            
+        
+
+        rectangle_ea214b38496bbabaf0657ade6f9f743f.bindPopup(popup_01397fdff12293432b6beafd06476db9)
+        ;
+
+        
+    
+    
+            rectangle_ea214b38496bbabaf0657ade6f9f743f.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>Roosevelt to North Ave. Cicero to Rockwell</b><br>🚗 20.4 km/h  |  🔴 66% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_cfe84b4828707145e27827be82b6a51b = L.circleMarker(
+                [41.887699, -87.7195365],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF8C00", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 21.18463768115942, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_396399e3b38702007e052771046ee3f4 = L.marker(
+                [41.887699, -87.7195365],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_df1d1594b37fe72c1f320015ca2fe574 = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                20 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_396399e3b38702007e052771046ee3f4.setIcon(div_icon_df1d1594b37fe72c1f320015ca2fe574);
+            
+    
+            var rectangle_958ab6d82adf5d53e8251c48d10657cd = L.rectangle(
+                [[41.866129, -87.691617], [41.910561, -87.647208]],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF8C00", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_e3ee2ef6ed20e8cfd9c801bcaa9c8a81 = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_834e42090de383dae2b4fe79ba57b685 = $(`<div id="html_834e42090de383dae2b4fe79ba57b685" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>Roosevelt to North. Rockwell to Halsted</b><br><hr>             🚗 Vitesse moy : <b>19.1 km/h</b><br>             🔴 Congestion  : <b>68%</b><br>             📍 Région ID   : 11             </div></div>`)[0];
+                popup_e3ee2ef6ed20e8cfd9c801bcaa9c8a81.setContent(html_834e42090de383dae2b4fe79ba57b685);
+            
+        
+
+        rectangle_958ab6d82adf5d53e8251c48d10657cd.bindPopup(popup_e3ee2ef6ed20e8cfd9c801bcaa9c8a81)
+        ;
+
+        
+    
+    
+            rectangle_958ab6d82adf5d53e8251c48d10657cd.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>Roosevelt to North. Rockwell to Halsted</b><br>🚗 19.1 km/h  |  🔴 68% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c9aeec98e6fbbf4c5101bb3db1cbc34d = L.circleMarker(
+                [41.888345, -87.66941249999999],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF8C00", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 21.634931506849313, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_f36a08e9fd00879b3c4f39f5c5901449 = L.marker(
+                [41.888345, -87.66941249999999],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_a42ffd03b9bf6312f1413cd6ae95929e = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                19 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_f36a08e9fd00879b3c4f39f5c5901449.setIcon(div_icon_a42ffd03b9bf6312f1413cd6ae95929e);
+            
+    
+            var rectangle_31cefa9ddad26dc040449f0768533133 = L.rectangle(
+                [[41.88886, -87.647208], [41.911401, -87.62308]],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF8C00", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_253032c13f0a39d7f38837b368b00d21 = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_b683ca7e5d0d03005000b8025a23206e = $(`<div id="html_b683ca7e5d0d03005000b8025a23206e" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>Wacker to North. Halsted to  Michigan</b><br><hr>             🚗 Vitesse moy : <b>18.2 km/h</b><br>             🔴 Congestion  : <b>70%</b><br>             📍 Région ID   : 12             </div></div>`)[0];
+                popup_253032c13f0a39d7f38837b368b00d21.setContent(html_b683ca7e5d0d03005000b8025a23206e);
+            
+        
+
+        rectangle_31cefa9ddad26dc040449f0768533133.bindPopup(popup_253032c13f0a39d7f38837b368b00d21)
+        ;
+
+        
+    
+    
+            rectangle_31cefa9ddad26dc040449f0768533133.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>Wacker to North. Halsted to  Michigan</b><br>🚗 18.2 km/h  |  🔴 70% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b70ed9f8988f60277c9f96c7f77f1e27 = L.circleMarker(
+                [41.9001305, -87.635144],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF8C00", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 21.939714285714288, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_4d886c5e206d406a081c0bdda7e59eb0 = L.marker(
+                [41.9001305, -87.635144],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_8b5fb4ee7b3515a71c554ecbf43adf24 = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                18 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_4d886c5e206d406a081c0bdda7e59eb0.setIcon(div_icon_8b5fb4ee7b3515a71c554ecbf43adf24);
+            
+    
+            var rectangle_1063d1d27013a5da2f7ba5d316c14f0d = L.rectangle(
+                [[41.866129, -87.647208], [41.88886, -87.62308]],
+                {"bubblingMouseEvents": true, "color": "#FF6347", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF4500", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_491d9c1eba7e58ba2a7fe33816071056 = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_0d29837f1245c456b1ddf09ad9d31cfe = $(`<div id="html_0d29837f1245c456b1ddf09ad9d31cfe" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>Roosevelt to Wacker: Halsted to Michigan</b><br><hr>             🚗 Vitesse moy : <b>15.9 km/h</b><br>             🔴 Congestion  : <b>74%</b><br>             📍 Région ID   : 13             </div></div>`)[0];
+                popup_491d9c1eba7e58ba2a7fe33816071056.setContent(html_0d29837f1245c456b1ddf09ad9d31cfe);
+            
+        
+
+        rectangle_1063d1d27013a5da2f7ba5d316c14f0d.bindPopup(popup_491d9c1eba7e58ba2a7fe33816071056)
+        ;
+
+        
+    
+    
+            rectangle_1063d1d27013a5da2f7ba5d316c14f0d.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>Roosevelt to Wacker: Halsted to Michigan</b><br>🚗 15.9 km/h  |  🔴 74% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_74ccb404a2081f8cd654a70e39b60631 = L.circleMarker(
+                [41.8774945, -87.635144],
+                {"bubblingMouseEvents": true, "color": "#FF6347", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF4500", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 22.702549019607844, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_5f570fe075b38b92ae752a11735fe584 = L.marker(
+                [41.8774945, -87.635144],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_c9b9b93c978f49e21e81814433816bae = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                16 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_5f570fe075b38b92ae752a11735fe584.setIcon(div_icon_c9b9b93c978f49e21e81814433816bae);
+            
+    
+            var rectangle_372c653dc054ea027df92a251ef83960 = L.rectangle(
+                [[41.822792, -87.747456], [41.866129, -87.685372]],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_a3ce59f8828c0e627efe48ea7e135340 = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_7ec63727c9ed3a7d2646b5bbeb445ef7 = $(`<div id="html_7ec63727c9ed3a7d2646b5bbeb445ef7" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>Pershing to Roosevel. Cicero to Western</b><br><hr>             🚗 Vitesse moy : <b>22.4 km/h</b><br>             🔴 Congestion  : <b>63%</b><br>             📍 Région ID   : 14             </div></div>`)[0];
+                popup_a3ce59f8828c0e627efe48ea7e135340.setContent(html_7ec63727c9ed3a7d2646b5bbeb445ef7);
+            
+        
+
+        rectangle_372c653dc054ea027df92a251ef83960.bindPopup(popup_a3ce59f8828c0e627efe48ea7e135340)
+        ;
+
+        
+    
+    
+            rectangle_372c653dc054ea027df92a251ef83960.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>Pershing to Roosevel. Cicero to Western</b><br>🚗 22.4 km/h  |  🔴 63% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7ac793ee3ad3500e88e4590cc693000c = L.circleMarker(
+                [41.8444605, -87.716414],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 20.54502415458937, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_ce7b8503b83b61189a2c122f5c12d385 = L.marker(
+                [41.8444605, -87.716414],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_c657b0617bedd889e3eb47c23724a7ad = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                22 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_ce7b8503b83b61189a2c122f5c12d385.setIcon(div_icon_c657b0617bedd889e3eb47c23724a7ad);
+            
+    
+            var rectangle_a7fb44693e1937cff1530ceebea75cdd = L.rectangle(
+                [[41.822792, -87.685372], [41.866129, -87.636322]],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_48135d0949456753c2d3e75d4c72b963 = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_79398c54049f65762cccb3ef1b7a1904 = $(`<div id="html_79398c54049f65762cccb3ef1b7a1904" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>Pershing to Roosevel. Western to Stewart</b><br><hr>             🚗 Vitesse moy : <b>23.2 km/h</b><br>             🔴 Congestion  : <b>61%</b><br>             📍 Région ID   : 15             </div></div>`)[0];
+                popup_48135d0949456753c2d3e75d4c72b963.setContent(html_79398c54049f65762cccb3ef1b7a1904);
+            
+        
+
+        rectangle_a7fb44693e1937cff1530ceebea75cdd.bindPopup(popup_48135d0949456753c2d3e75d4c72b963)
+        ;
+
+        
+    
+    
+            rectangle_a7fb44693e1937cff1530ceebea75cdd.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>Pershing to Roosevel. Western to Stewart</b><br>🚗 23.2 km/h  |  🔴 61% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_25460e2bb28af7525bd1f96646b31410 = L.circleMarker(
+                [41.8444605, -87.660847],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 20.27861904761905, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_eef8517341568187507bc56ef2c9ee56 = L.marker(
+                [41.8444605, -87.660847],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_671ebc7057b9f67937bd10193950a475 = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                23 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_eef8517341568187507bc56ef2c9ee56.setIcon(div_icon_671ebc7057b9f67937bd10193950a475);
+            
+    
+            var rectangle_9a0c12ffc794b1e1783e1e298fc9fe3a = L.rectangle(
+                [[41.764066, -87.802188], [41.822792, -87.747456]],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_68197fa278e2e8b7571f5771ee4d053c = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_f981b82932ea575c82e1257670618a27 = $(`<div id="html_f981b82932ea575c82e1257670618a27" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>71st to Pershing. Halem to Cicero</b><br><hr>             🚗 Vitesse moy : <b>27.5 km/h</b><br>             🔴 Congestion  : <b>54%</b><br>             📍 Région ID   : 17             </div></div>`)[0];
+                popup_68197fa278e2e8b7571f5771ee4d053c.setContent(html_f981b82932ea575c82e1257670618a27);
+            
+        
+
+        rectangle_9a0c12ffc794b1e1783e1e298fc9fe3a.bindPopup(popup_68197fa278e2e8b7571f5771ee4d053c)
+        ;
+
+        
+    
+    
+            rectangle_9a0c12ffc794b1e1783e1e298fc9fe3a.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>71st to Pershing. Halem to Cicero</b><br>🚗 27.5 km/h  |  🔴 54% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_04bd3cb9c6e3594b45d996f51f6db611 = L.circleMarker(
+                [41.793429, -87.774822],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 18.84646766169154, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_09041f3cfac462d2725c92bd5426842d = L.marker(
+                [41.793429, -87.774822],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_f73e19021af82dc5772e5d68d14007cf = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                27 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_09041f3cfac462d2725c92bd5426842d.setIcon(div_icon_f73e19021af82dc5772e5d68d14007cf);
+            
+    
+            var rectangle_8372e5ab7a60ed54e5709cf09d19b151 = L.rectangle(
+                [[41.764066, -87.747456], [41.822792, -87.68373]],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_b86b6adf03a995eb2740ad7217f6520d = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_e934720850ee85cbed34b1dc74ada292 = $(`<div id="html_e934720850ee85cbed34b1dc74ada292" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>71st to Pershing. Cicero to Western</b><br><hr>             🚗 Vitesse moy : <b>22.5 km/h</b><br>             🔴 Congestion  : <b>63%</b><br>             📍 Région ID   : 18             </div></div>`)[0];
+                popup_b86b6adf03a995eb2740ad7217f6520d.setContent(html_e934720850ee85cbed34b1dc74ada292);
+            
+        
+
+        rectangle_8372e5ab7a60ed54e5709cf09d19b151.bindPopup(popup_b86b6adf03a995eb2740ad7217f6520d)
+        ;
+
+        
+    
+    
+            rectangle_8372e5ab7a60ed54e5709cf09d19b151.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>71st to Pershing. Cicero to Western</b><br>🚗 22.5 km/h  |  🔴 63% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d41e1c9dbc95661ec09a3c520cebf6a2 = L.circleMarker(
+                [41.793429, -87.715593],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 20.508137254901964, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_9d08d2ebc00dd0be9455ea8bea6595c0 = L.marker(
+                [41.793429, -87.715593],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_5b24be1ddaea32ca850369315ed6225d = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                22 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_9d08d2ebc00dd0be9455ea8bea6595c0.setIcon(div_icon_5b24be1ddaea32ca850369315ed6225d);
+            
+    
+            var rectangle_c5cc9477d8030b5154111dc9d48be254 = L.rectangle(
+                [[41.764066, -87.68373], [41.822792, -87.636322]],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_503b1def8f25293ef52ec4e993179bd9 = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_e375cb7af4898ba3db567ead7f38c09b = $(`<div id="html_e375cb7af4898ba3db567ead7f38c09b" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>71st to Pershing. Western to Steward</b><br><hr>             🚗 Vitesse moy : <b>23.7 km/h</b><br>             🔴 Congestion  : <b>61%</b><br>             📍 Région ID   : 19             </div></div>`)[0];
+                popup_503b1def8f25293ef52ec4e993179bd9.setContent(html_e375cb7af4898ba3db567ead7f38c09b);
+            
+        
+
+        rectangle_c5cc9477d8030b5154111dc9d48be254.bindPopup(popup_503b1def8f25293ef52ec4e993179bd9)
+        ;
+
+        
+    
+    
+            rectangle_c5cc9477d8030b5154111dc9d48be254.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>71st to Pershing. Western to Steward</b><br>🚗 23.7 km/h  |  🔴 61% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4812e86b6e035725ad20f76fe4ea0886 = L.circleMarker(
+                [41.793429, -87.660026],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 20.107512437810946, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_49928d05d6ac1c0ce79134e058f59f25 = L.marker(
+                [41.793429, -87.660026],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_9810565e76cc6f776ab86dcb9870c2f4 = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                24 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_49928d05d6ac1c0ce79134e058f59f25.setIcon(div_icon_9810565e76cc6f776ab86dcb9870c2f4);
+            
+    
+            var rectangle_561bb29a96f92c993609253fe53a6bd6 = L.rectangle(
+                [[41.764066, -87.606334], [41.822792, -87.56626]],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_ab0ea6545798369d67c7cd54576dfdce = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_08251b3772e73da7b5867146123f1673 = $(`<div id="html_08251b3772e73da7b5867146123f1673" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>71st to Pershing. Cottage Grove to Lake Shore</b><br><hr>             🚗 Vitesse moy : <b>22.7 km/h</b><br>             🔴 Congestion  : <b>62%</b><br>             📍 Région ID   : 21             </div></div>`)[0];
+                popup_ab0ea6545798369d67c7cd54576dfdce.setContent(html_08251b3772e73da7b5867146123f1673);
+            
+        
+
+        rectangle_561bb29a96f92c993609253fe53a6bd6.bindPopup(popup_ab0ea6545798369d67c7cd54576dfdce)
+        ;
+
+        
+    
+    
+            rectangle_561bb29a96f92c993609253fe53a6bd6.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>71st to Pershing. Cottage Grove to Lake Shore</b><br>🚗 22.7 km/h  |  🔴 62% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_437692e74eed22d4cf50dfdeb9118fa2 = L.circleMarker(
+                [41.793429, -87.586297],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 20.434685990338167, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_8fe96cf204411b957d2ce78671fa9a95 = L.marker(
+                [41.793429, -87.586297],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_5176362fe91c42559c6fa89d7d2077ec = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                23 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_8fe96cf204411b957d2ce78671fa9a95.setIcon(div_icon_5176362fe91c42559c6fa89d7d2077ec);
+            
+    
+            var rectangle_890d830bf701e778636afc8f95dbb237 = L.rectangle(
+                [[41.728472, -87.747456], [41.764066, -87.67298]],
+                {"bubblingMouseEvents": true, "color": "#ADFF2F", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9ACD32", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_2d2c0f87a9e682b2a08a88dce15683ce = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_71844e62c547c82738170a1d33b30cfe = $(`<div id="html_71844e62c547c82738170a1d33b30cfe" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>91st to 71st. Cicero to Damen</b><br><hr>             🚗 Vitesse moy : <b>28.4 km/h</b><br>             🔴 Congestion  : <b>53%</b><br>             📍 Région ID   : 22             </div></div>`)[0];
+                popup_2d2c0f87a9e682b2a08a88dce15683ce.setContent(html_71844e62c547c82738170a1d33b30cfe);
+            
+        
+
+        rectangle_890d830bf701e778636afc8f95dbb237.bindPopup(popup_2d2c0f87a9e682b2a08a88dce15683ce)
+        ;
+
+        
+    
+    
+            rectangle_890d830bf701e778636afc8f95dbb237.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>91st to 71st. Cicero to Damen</b><br>🚗 28.4 km/h  |  🔴 53% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e2daae71188a4a429a662aa44b41a838 = L.circleMarker(
+                [41.746269, -87.710218],
+                {"bubblingMouseEvents": true, "color": "#ADFF2F", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9ACD32", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 18.538873239436622, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_f40cc8de1a4d3f8ec0ede4c804a09122 = L.marker(
+                [41.746269, -87.710218],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_8b1e60491443cc5eac8cacd183bf1064 = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                28 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_f40cc8de1a4d3f8ec0ede4c804a09122.setIcon(div_icon_8b1e60491443cc5eac8cacd183bf1064);
+            
+    
+            var rectangle_dd4301cb5eee90465af1df6ffec5d8ca = L.rectangle(
+                [[41.728472, -87.67298], [41.764066, -87.606334]],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF8C00", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_49bd8cfcee2018074a07a2cce0e16d2f = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_045ef135ac830306b9fdc5c74de498aa = $(`<div id="html_045ef135ac830306b9fdc5c74de498aa" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>91st to 71st. Damen to Cottage Grove</b><br><hr>             🚗 Vitesse moy : <b>20.5 km/h</b><br>             🔴 Congestion  : <b>66%</b><br>             📍 Région ID   : 23             </div></div>`)[0];
+                popup_49bd8cfcee2018074a07a2cce0e16d2f.setContent(html_045ef135ac830306b9fdc5c74de498aa);
+            
+        
+
+        rectangle_dd4301cb5eee90465af1df6ffec5d8ca.bindPopup(popup_49bd8cfcee2018074a07a2cce0e16d2f)
+        ;
+
+        
+    
+    
+            rectangle_dd4301cb5eee90465af1df6ffec5d8ca.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>91st to 71st. Damen to Cottage Grove</b><br>🚗 20.5 km/h  |  🔴 66% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_737bfe62b964ef344d4ffb39f2432256 = L.circleMarker(
+                [41.746269, -87.639657],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF8C00", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 21.161890547263685, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_149a7f382a3e4c82bad2ad287b553705 = L.marker(
+                [41.746269, -87.639657],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_992d13443bddfa72fefbbb4cb5565658 = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                21 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_149a7f382a3e4c82bad2ad287b553705.setIcon(div_icon_992d13443bddfa72fefbbb4cb5565658);
+            
+    
+            var rectangle_208c5b09e26ce558fe47280f9a89df6c = L.rectangle(
+                [[41.728472, -87.606334], [41.764066, -87.526388]],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_422d3b99a6cf75035fd06877ebd3da7f = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_eede75d9b518d15f36ca379374231b5f = $(`<div id="html_eede75d9b518d15f36ca379374231b5f" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>91st to 71st. Cottage Grove to Lake Shore</b><br><hr>             🚗 Vitesse moy : <b>22.8 km/h</b><br>             🔴 Congestion  : <b>62%</b><br>             📍 Région ID   : 24             </div></div>`)[0];
+                popup_422d3b99a6cf75035fd06877ebd3da7f.setContent(html_eede75d9b518d15f36ca379374231b5f);
+            
+        
+
+        rectangle_208c5b09e26ce558fe47280f9a89df6c.bindPopup(popup_422d3b99a6cf75035fd06877ebd3da7f)
+        ;
+
+        
+    
+    
+            rectangle_208c5b09e26ce558fe47280f9a89df6c.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>91st to 71st. Cottage Grove to Lake Shore</b><br>🚗 22.8 km/h  |  🔴 62% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0826706b41552109d5c120d5e05f0cf4 = L.circleMarker(
+                [41.746269, -87.566361],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 20.4039898989899, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_c39a6cae7b9bf38752479c4c114ffee7 = L.marker(
+                [41.746269, -87.566361],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_75a7fca8eb9715ec946e9115602063ba = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                23 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_c39a6cae7b9bf38752479c4c114ffee7.setIcon(div_icon_75a7fca8eb9715ec946e9115602063ba);
+            
+    
+            var rectangle_dc0f6e60ae97c18f94a23c27fb78c0df = L.rectangle(
+                [[41.677477, -87.747456], [41.728472, -87.662508]],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_83c0b02090ee75789c8103255981af06 = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_c0314fc0b7faea560bc43e11813664ef = $(`<div id="html_c0314fc0b7faea560bc43e11813664ef" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>119th to 91st. Cicero to Ashland</b><br><hr>             🚗 Vitesse moy : <b>27.6 km/h</b><br>             🔴 Congestion  : <b>54%</b><br>             📍 Région ID   : 25             </div></div>`)[0];
+                popup_83c0b02090ee75789c8103255981af06.setContent(html_c0314fc0b7faea560bc43e11813664ef);
+            
+        
+
+        rectangle_dc0f6e60ae97c18f94a23c27fb78c0df.bindPopup(popup_83c0b02090ee75789c8103255981af06)
+        ;
+
+        
+    
+    
+            rectangle_dc0f6e60ae97c18f94a23c27fb78c0df.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>119th to 91st. Cicero to Ashland</b><br>🚗 27.6 km/h  |  🔴 54% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6f69a8f65bcfa34148a9b1be0d917510 = L.circleMarker(
+                [41.702974499999996, -87.704982],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 18.810422535211266, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_159d567ce26d7452bfcb63f3b38d7f18 = L.marker(
+                [41.702974499999996, -87.704982],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_f8c52d4477951b6d048d50bceba98b70 = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                28 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_159d567ce26d7452bfcb63f3b38d7f18.setIcon(div_icon_f8c52d4477951b6d048d50bceba98b70);
+            
+    
+            var rectangle_5aa7cf7d82300390bde5f91fab819978 = L.rectangle(
+                [[41.677477, -87.662508], [41.728472, -87.584845]],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_0e8cd42058ae6ac7d0447d9ffa86ffb6 = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_80fd774ac0555dd5151e36dc1b7782ab = $(`<div id="html_80fd774ac0555dd5151e36dc1b7782ab" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>119th to 91st. Ashland to Stony Island</b><br><hr>             🚗 Vitesse moy : <b>26.1 km/h</b><br>             🔴 Congestion  : <b>56%</b><br>             📍 Région ID   : 26             </div></div>`)[0];
+                popup_0e8cd42058ae6ac7d0447d9ffa86ffb6.setContent(html_80fd774ac0555dd5151e36dc1b7782ab);
+            
+        
+
+        rectangle_5aa7cf7d82300390bde5f91fab819978.bindPopup(popup_0e8cd42058ae6ac7d0447d9ffa86ffb6)
+        ;
+
+        
+    
+    
+            rectangle_5aa7cf7d82300390bde5f91fab819978.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>119th to 91st. Ashland to Stony Island</b><br>🚗 26.1 km/h  |  🔴 56% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f9d836a9fdfb63eeed2c8cd8341182e4 = L.circleMarker(
+                [41.702974499999996, -87.6236765],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 19.299342723004692, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_a9d02169b85fcdb04d13f725c51c4d56 = L.marker(
+                [41.702974499999996, -87.6236765],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_e3678a518a6d9de50e7ee776f2bfef80 = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                26 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_a9d02169b85fcdb04d13f725c51c4d56.setIcon(div_icon_e3678a518a6d9de50e7ee776f2bfef80);
+            
+    
+            var rectangle_3eec2fc3302eeb963f42623927d0a24e = L.rectangle(
+                [[41.677477, -87.584845], [41.728472, -87.524436]],
+                {"bubblingMouseEvents": true, "color": "#ADFF2F", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9ACD32", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_60533610e392df1965d8584f7feb6ba3 = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_80593cbb3c519d2128f0a4e558ac3a09 = $(`<div id="html_80593cbb3c519d2128f0a4e558ac3a09" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>119th to 91st. Stony Island to State Line</b><br><hr>             🚗 Vitesse moy : <b>29.1 km/h</b><br>             🔴 Congestion  : <b>51%</b><br>             📍 Région ID   : 27             </div></div>`)[0];
+                popup_60533610e392df1965d8584f7feb6ba3.setContent(html_80593cbb3c519d2128f0a4e558ac3a09);
+            
+        
+
+        rectangle_3eec2fc3302eeb963f42623927d0a24e.bindPopup(popup_60533610e392df1965d8584f7feb6ba3)
+        ;
+
+        
+    
+    
+            rectangle_3eec2fc3302eeb963f42623927d0a24e.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>119th to 91st. Stony Island to State Line</b><br>🚗 29.1 km/h  |  🔴 51% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3a189d6b139c8b7c71c6f2de5ac6794b = L.circleMarker(
+                [41.702974499999996, -87.5546405],
+                {"bubblingMouseEvents": true, "color": "#ADFF2F", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9ACD32", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 18.293333333333333, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_e3e1558fe99816162c0bfb08ecac47e1 = L.marker(
+                [41.702974499999996, -87.5546405],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_120b54d3cffe5c9f195b33ed6a6950e9 = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                29 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_e3e1558fe99816162c0bfb08ecac47e1.setIcon(div_icon_120b54d3cffe5c9f195b33ed6a6950e9);
+            
+    
+            var rectangle_1f5d74aa50ef75b66b3f31a58d54e67e = L.rectangle(
+                [[41.644139, -87.662508], [41.677477, -87.524436]],
+                {"bubblingMouseEvents": true, "color": "#ADFF2F", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9ACD32", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_5278533ef327c332f5a498b3670f71d7 = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_caee985de7a595c2d1af24ddff1ba796 = $(`<div id="html_caee985de7a595c2d1af24ddff1ba796" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>138th to 119th. Ashland to State Line</b><br><hr>             🚗 Vitesse moy : <b>29.5 km/h</b><br>             🔴 Congestion  : <b>51%</b><br>             📍 Région ID   : 28             </div></div>`)[0];
+                popup_5278533ef327c332f5a498b3670f71d7.setContent(html_caee985de7a595c2d1af24ddff1ba796);
+            
+        
+
+        rectangle_1f5d74aa50ef75b66b3f31a58d54e67e.bindPopup(popup_5278533ef327c332f5a498b3670f71d7)
+        ;
+
+        
+    
+    
+            rectangle_1f5d74aa50ef75b66b3f31a58d54e67e.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>138th to 119th. Ashland to State Line</b><br>🚗 29.5 km/h  |  🔴 51% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a2200c46511ed2004b5d1bff09797c62 = L.circleMarker(
+                [41.660808, -87.59347199999999],
+                {"bubblingMouseEvents": true, "color": "#ADFF2F", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9ACD32", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 18.179460784313722, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_9e7c7a66909716247f5690818a56c78f = L.marker(
+                [41.660808, -87.59347199999999],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_c3a272c5c1e3a044bf6a8413d719a6ca = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                29 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_9e7c7a66909716247f5690818a56c78f.setIcon(div_icon_c3a272c5c1e3a044bf6a8413d719a6ca);
+            
+    
+            var rectangle_bc8b733e930c8483a2b115405f3e6c99 = L.rectangle(
+                [[41.866129, -87.62308], [41.911401, -87.595378]],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_e34373aaafaba55ef4e6feb1f1937d95 = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_0447058a59dd1a37af24e730ef1f3f5f = $(`<div id="html_0447058a59dd1a37af24e730ef1f3f5f" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>Roosevelt to Oak. Michigan to Lake Shore</b><br><hr>             🚗 Vitesse moy : <b>22.5 km/h</b><br>             🔴 Congestion  : <b>62%</b><br>             📍 Région ID   : 29             </div></div>`)[0];
+                popup_e34373aaafaba55ef4e6feb1f1937d95.setContent(html_0447058a59dd1a37af24e730ef1f3f5f);
+            
+        
+
+        rectangle_bc8b733e930c8483a2b115405f3e6c99.bindPopup(popup_e34373aaafaba55ef4e6feb1f1937d95)
+        ;
+
+        
+    
+    
+            rectangle_bc8b733e930c8483a2b115405f3e6c99.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>Roosevelt to Oak. Michigan to Lake Shore</b><br>🚗 22.5 km/h  |  🔴 62% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3a2787041d1fb0d5aa34cff1f81db483 = L.circleMarker(
+                [41.888765, -87.609229],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 20.49852380952381, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_d14c692e0faf684b74a6468be0074676 = L.marker(
+                [41.888765, -87.609229],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_dda7296f645bbb061c6f91f23236ae0b = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                23 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_d14c692e0faf684b74a6468be0074676.setIcon(div_icon_dda7296f645bbb061c6f91f23236ae0b);
+            
+    
+            var rectangle_4f2cbfe9b5d98ba19fc93e46d3ed5dc4 = L.rectangle(
+                [[41.997946, -87.709645], [42.026444, -87.654561]],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF8C00", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_6edaaad2f8f795423a60acd5bdfe86d1 = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_9ca889fc32419ba9ab6c377a2422cc97 = $(`<div id="html_9ca889fc32419ba9ab6c377a2422cc97" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>North of Devon. Kedzie to Lake Shore</b><br><hr>             🚗 Vitesse moy : <b>20.2 km/h</b><br>             🔴 Congestion  : <b>66%</b><br>             📍 Région ID   : 1             </div></div>`)[0];
+                popup_6edaaad2f8f795423a60acd5bdfe86d1.setContent(html_9ca889fc32419ba9ab6c377a2422cc97);
+            
+        
+
+        rectangle_4f2cbfe9b5d98ba19fc93e46d3ed5dc4.bindPopup(popup_6edaaad2f8f795423a60acd5bdfe86d1)
+        ;
+
+        
+    
+    
+            rectangle_4f2cbfe9b5d98ba19fc93e46d3ed5dc4.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>North of Devon. Kedzie to Lake Shore</b><br>🚗 20.2 km/h  |  🔴 66% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3f73dd747188ac2faeca6ee1cae85bb4 = L.circleMarker(
+                [42.012195, -87.682103],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF8C00", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 21.262355555555555, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_98953318779f46a67ad7b43a4ec7fb38 = L.marker(
+                [42.012195, -87.682103],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_1d9512cdc6245d0bff6c69cac5276bf6 = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                20 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_98953318779f46a67ad7b43a4ec7fb38.setIcon(div_icon_1d9512cdc6245d0bff6c69cac5276bf6);
+            
+    
+            var rectangle_bfc20334f35cfc9a63b369031d2664c4 = L.rectangle(
+                [[41.764066, -87.636322], [41.822792, -87.606334]],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_a3f3f50121eca8d7c824ea95e9c6ca87 = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_cfaf94c88ac5a774e2509dd773f93f0d = $(`<div id="html_cfaf94c88ac5a774e2509dd773f93f0d" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>71st to Pershing. Steward to Cottage Grove</b><br><hr>             🚗 Vitesse moy : <b>24.1 km/h</b><br>             🔴 Congestion  : <b>60%</b><br>             📍 Région ID   : 20             </div></div>`)[0];
+                popup_a3f3f50121eca8d7c824ea95e9c6ca87.setContent(html_cfaf94c88ac5a774e2509dd773f93f0d);
+            
+        
+
+        rectangle_bfc20334f35cfc9a63b369031d2664c4.bindPopup(popup_a3f3f50121eca8d7c824ea95e9c6ca87)
+        ;
+
+        
+    
+    
+            rectangle_bfc20334f35cfc9a63b369031d2664c4.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>71st to Pershing. Steward to Cottage Grove</b><br>🚗 24.1 km/h  |  🔴 60% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f94f860d22cad6e11f96bc38ef08f778 = L.circleMarker(
+                [41.793429, -87.621328],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 19.952828282828282, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_7f9ebb01575f3440aa213794371b40f9 = L.marker(
+                [41.793429, -87.621328],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_2473f72227e0579f3463546e58a875cf = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                24 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_7f9ebb01575f3440aa213794371b40f9.setIcon(div_icon_2473f72227e0579f3463546e58a875cf);
+            
+    
+            var rectangle_3c3f0f4e855668f285222d3c67a009b7 = L.rectangle(
+                [[41.909269, -87.84621], [41.960669, -87.747456]],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF8C00", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_2d6e391dc5345b4fcd48b07318255595 = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_22507be9cf9ebe79eef3b8b0286bfffb = $(`<div id="html_22507be9cf9ebe79eef3b8b0286bfffb" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>North Ave to Montrose. East River to Cicero</b><br><hr>             🚗 Vitesse moy : <b>21.9 km/h</b><br>             🔴 Congestion  : <b>63%</b><br>             📍 Région ID   : 5             </div></div>`)[0];
+                popup_2d6e391dc5345b4fcd48b07318255595.setContent(html_22507be9cf9ebe79eef3b8b0286bfffb);
+            
+        
+
+        rectangle_3c3f0f4e855668f285222d3c67a009b7.bindPopup(popup_2d6e391dc5345b4fcd48b07318255595)
+        ;
+
+        
+    
+    
+            rectangle_3c3f0f4e855668f285222d3c67a009b7.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>North Ave to Montrose. East River to Cicero</b><br>🚗 21.9 km/h  |  🔴 63% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9f7bf541707eb146c612380f4b53dfa5 = L.circleMarker(
+                [41.934969, -87.79683299999999],
+                {"bubblingMouseEvents": true, "color": "#FFA500", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FF8C00", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 20.686919191919195, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_9be32cf17fa0e94d9c014defefa2a784 = L.marker(
+                [41.934969, -87.79683299999999],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_da3b13384e2aa1bad1f595db08af9273 = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                22 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_9be32cf17fa0e94d9c014defefa2a784.setIcon(div_icon_da3b13384e2aa1bad1f595db08af9273);
+            
+    
+            var rectangle_608aa73ecce54764bd445c7f413c6df1 = L.rectangle(
+                [[41.822792, -87.636322], [41.866129, -87.597952]],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.55, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+        var popup_b1248a169275e72f88f95b5ad64ab1e5 = L.popup({
+  "maxWidth": 220,
+});
+
+        
+            
+                var html_41bea6b79172a377c970f0c0781b906a = $(`<div id="html_41bea6b79172a377c970f0c0781b906a" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial; font-size:13px; color:#111'>             <b>Pershing to Roosevelt. Stewart to Lake Shore</b><br><hr>             🚗 Vitesse moy : <b>25.3 km/h</b><br>             🔴 Congestion  : <b>58%</b><br>             📍 Région ID   : 16             </div></div>`)[0];
+                popup_b1248a169275e72f88f95b5ad64ab1e5.setContent(html_41bea6b79172a377c970f0c0781b906a);
+            
+        
+
+        rectangle_608aa73ecce54764bd445c7f413c6df1.bindPopup(popup_b1248a169275e72f88f95b5ad64ab1e5)
+        ;
+
+        
+    
+    
+            rectangle_608aa73ecce54764bd445c7f413c6df1.bindTooltip(
+                `<div style="font-size:13px; font-family:Arial;">
+                     <b>Pershing to Roosevelt. Stewart to Lake Shore</b><br>🚗 25.3 km/h  |  🔴 58% congestion
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_62a33c416ae5a61708a218529d91af61 = L.circleMarker(
+                [41.8444605, -87.61713700000001],
+                {"bubblingMouseEvents": true, "color": "#FFEC00", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#FFD700", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 19.58308080808081, "stroke": true, "weight": 2}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var marker_7ee7e5a17750479fc659942c64112ccf = L.marker(
+                [41.8444605, -87.61713700000001],
+                {
+}
+            ).addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+    
+            var div_icon_bded53eec0bea2149dcc21e8c5be761a = L.divIcon({
+  "html": "\u003cdiv style=\"\n                font-size:11px; font-weight:bold;\n                color:white; text-align:center;\n                text-shadow: 1px 1px 2px black;\n                width:60px; margin-left:-30px;\"\u003e\n                25 km/h\n            \u003c/div\u003e",
+  "iconSize": [60, 20],
+  "className": "empty",
+});
+        
+    
+                marker_7ee7e5a17750479fc659942c64112ccf.setIcon(div_icon_bded53eec0bea2149dcc21e8c5be761a);
+            
+    
+            var heat_map_32bcd8903846d43556f6ee89fbc560b7 = L.heatLayer(
+                [[41.9898844, -87.79683299999999, 0.5516619047619047], [41.979307500000004, -87.711023, 0.6626862745098039], [41.979307500000004, -87.660514, 0.6633582089552239], [41.946255, -87.711023, 0.6759063926940639], [41.920555, -87.711023, 0.6581948356807512], [41.935615, -87.646851, 0.670273631840796], [41.887699, -87.7617015, 0.6292149758454106], [41.887699, -87.7195365, 0.659231884057971], [41.888345, -87.66941249999999, 0.6817465753424657], [41.9001305, -87.635144, 0.6969857142857143], [41.8774945, -87.635144, 0.7351274509803922], [41.8444605, -87.716414, 0.6272512077294685], [41.8444605, -87.660847, 0.6139309523809524], [41.793429, -87.774822, 0.5423233830845772], [41.793429, -87.715593, 0.6254068627450982], [41.793429, -87.660026, 0.6053756218905473], [41.793429, -87.586297, 0.6217342995169083], [41.746269, -87.710218, 0.5269436619718311], [41.746269, -87.639657, 0.6580945273631842], [41.746269, -87.566361, 0.6201994949494949], [41.702974499999996, -87.704982, 0.5405211267605634], [41.702974499999996, -87.6236765, 0.5649671361502346], [41.702974499999996, -87.5546405, 0.5146666666666666], [41.660808, -87.59347199999999, 0.5089730392156862], [41.888765, -87.609229, 0.6249261904761905], [42.012195, -87.682103, 0.6631177777777777], [41.793429, -87.621328, 0.5976414141414141], [41.934969, -87.79683299999999, 0.6343459595959596], [41.8444605, -87.61713700000001, 0.5791540404040404]],
+                {
+  "minOpacity": 0.3,
+  "maxZoom": 18,
+  "radius": 50,
+  "blur": 40,
+  "gradient": {
+  "0.0": "#00FF00",
+  "0.3": "#ADFF2F",
+  "0.5": "#FFD700",
+  "0.7": "#FF8C00",
+  "1.0": "#FF0000",
+},
+}
+            );
+        
+    
+            heat_map_32bcd8903846d43556f6ee89fbc560b7.addTo(map_41e794e5a8a3273caf834a33b4604333);
+        
+</script>
+</html>

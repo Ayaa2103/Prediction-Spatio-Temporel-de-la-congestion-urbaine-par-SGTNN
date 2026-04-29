@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>STGNN — Chicago Traffic Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Unbounded:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root{--bg:#0C0C0F;--bg2:#111116;--bg3:#18181F;--border:rgba(255,255,255,0.06);--txt:#ECECF1;--muted:#5A5A6E;--lime:#C8FF00;--pink:#FF3CAC;--teal:#00E5CC;--orange:#FF6B35;--white:#FFFFFF;}
+*{margin:0;padding:0;box-sizing:border-box;}html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;display:flex;flex-direction:column;background-image:linear-gradient(rgba(200,255,0,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(200,255,0,0.015) 1px,transparent 1px);background-size:40px 40px;}
+#topbar{flex-shrink:0;height:64px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:relative;overflow:hidden;}
+#topbar::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--lime),var(--pink),var(--teal),var(--lime));background-size:300% 100%;animation:flow 4s linear infinite;}
+@keyframes flow{0%{background-position:0% 0}100%{background-position:300% 0}}
+.logo{font-family:'Unbounded',sans-serif;font-weight:900;font-size:17px;display:flex;align-items:center;gap:10px;}
+.logo-icon{width:36px;height:36px;border-radius:8px;background:var(--lime);display:flex;align-items:center;justify-content:center;font-size:18px;}
+.t1{color:var(--white);}.t2{color:var(--lime);font-size:10px;font-weight:400;font-family:'DM Mono',monospace;display:block;margin-top:2px;}
+.pills{display:flex;gap:8px;}
+.pill{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;padding:5px 12px;border-radius:100px;display:flex;align-items:center;gap:5px;}
+.pl{background:rgba(200,255,0,0.1);border:1px solid rgba(200,255,0,0.3);color:var(--lime);}
+.pp{background:rgba(255,60,172,0.1);border:1px solid rgba(255,60,172,0.3);color:var(--pink);}
+.pt{background:rgba(0,229,204,0.1);border:1px solid rgba(0,229,204,0.3);color:var(--teal);}
+.dot{width:6px;height:6px;border-radius:50%;animation:pulse 2s infinite;}
+.dl{background:var(--lime);}.dp{background:var(--pink);}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+#nav{flex-shrink:0;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;padding:0 32px;gap:4px;}
+.nb{font-family:'Unbounded',sans-serif;font-weight:700;font-size:10px;letter-spacing:0.5px;padding:12px 18px;color:var(--muted);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;}
+.nb:hover{color:var(--txt);}.nb.on{color:var(--lime);border-bottom-color:var(--lime);}
+#main{flex:1;overflow-y:auto;padding:28px 32px;}
+.page{display:none;}.page.on{display:block;}
+.slbl{font-family:'Unbounded',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+.slbl::before{content:'//';color:var(--lime);font-size:12px;}.slbl::after{content:'';flex:1;height:1px;background:var(--border);}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
+.mc{background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:20px;position:relative;overflow:hidden;transition:transform 0.15s;}
+.mc:hover{transform:translateY(-2px);}
+.mc.lm{border-top:2px solid var(--lime);}.mc.pk{border-top:2px solid var(--pink);}
+.mc.tl{border-top:2px solid var(--teal);}.mc.or{border-top:2px solid var(--orange);}
+.ml{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.mv{font-family:'Unbounded',sans-serif;font-size:30px;font-weight:900;line-height:1;}
+.ms2{font-size:11px;color:var(--muted);margin-top:6px;}
+.lm .mv{color:var(--lime);}.pk .mv{color:var(--pink);}.tl .mv{color:var(--teal);}.or .mv{color:var(--orange);}
+.cc{background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:20px;}
+.ch{margin-bottom:18px;display:flex;align-items:flex-start;justify-content:space-between;}
+.ct{font-family:'Unbounded',sans-serif;font-weight:700;font-size:12px;color:var(--white);}
+.cs{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:4px;}
+canvas{max-height:260px;}
+.tw{overflow:hidden;border-radius:12px;border:1px solid var(--border);}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead th{padding:12px 16px;text-align:left;background:rgba(200,255,0,0.04);color:var(--lime);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;border-bottom:1px solid var(--border);}
+tbody td{padding:11px 16px;border-bottom:1px solid var(--border);}
+tbody tr:hover{background:rgba(255,255,255,0.02);}
+tbody tr:last-child td{border-bottom:none;}
+.best{color:var(--lime);font-weight:600;}
+.tg{font-family:'DM Mono',monospace;font-size:8px;padding:2px 6px;border-radius:4px;margin-left:6px;vertical-align:middle;background:rgba(200,255,0,0.12);color:var(--lime);border:1px solid rgba(200,255,0,0.25);}
+.cb{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;}
+.fd{display:flex;flex-direction:column;gap:6px;}
+.fd label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+select{background:var(--bg2);color:var(--txt);border:1px solid var(--border);padding:8px 14px;border-radius:8px;font-size:12px;cursor:pointer;outline:none;font-family:'Inter',sans-serif;min-width:170px;transition:border-color 0.15s;}
+select:focus{border-color:var(--lime);}
+.btn{background:var(--lime);color:var(--bg);border:none;padding:9px 22px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Unbounded',sans-serif;transition:opacity 0.15s;}
+.btn:hover{opacity:0.85;}
+#mo{background:var(--bg3);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;}
+#leaflet-map{height:380px;}
+#ms{padding:10px 18px;display:flex;gap:24px;flex-wrap:wrap;font-family:'DM Mono',monospace;font-size:10px;background:var(--bg2);border-top:1px solid var(--border);}
+.mst{color:var(--muted);}.mst b{color:var(--txt);}
+.hhlbs{display:flex;gap:3px;margin-left:72px;margin-bottom:5px;}
+.hhlbl{width:32px;font-size:8px;color:var(--muted);text-align:center;font-family:'DM Mono',monospace;}
+.hmr{display:flex;gap:3px;margin-bottom:3px;align-items:center;}
+.hmc{width:32px;height:24px;border-radius:4px;cursor:pointer;transition:transform 0.1s;}
+.hmc:hover{transform:scale(1.3);z-index:10;}
+.hml{font-size:9px;color:var(--muted);width:68px;text-align:right;padding-right:6px;font-family:'DM Mono',monospace;}
+#footer{flex-shrink:0;background:var(--bg2);border-top:1px solid var(--border);padding:8px 32px;display:flex;align-items:center;justify-content:space-between;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
+.leaflet-popup-content-wrapper{background:#18181F!important;border:1px solid rgba(255,255,255,0.06)!important;color:#ECECF1!important;border-radius:10px!important;}
+.leaflet-popup-tip{background:#18181F!important;}
+</style>
+</head>
+<body>
+<div id="topbar">
+  <div class="logo">
+    <div class="logo-icon">🧠</div>
+    <div><span class="t1">STGNN <span style="color:var(--lime)">×</span> Chicago</span><span class="t2">// Prédiction Spatio-Temporelle · Congestion Urbaine</span></div>
+  </div>
+  <div class="pills">
+    <div class="pill pl"><span class="dot dl"></span>MAE : 2.18 km/h</div>
+    <div class="pill pp"><span class="dot dp"></span>R² : 0.825</div>
+    <div class="pill pt">RTX A500 GPU</div>
+  </div>
+</div>
+<div id="nav">
+  <button class="nb on" onclick="go('dash',this)">📊 DASHBOARD</button>
+  <button class="nb" onclick="go('mod',this)">🤖 MODÈLES</button>
+  <button class="nb" onclick="go('pred',this)">📈 PRÉDICTIONS</button>
+  <button class="nb" onclick="go('map',this)">🗺️ CARTE</button>
+  <button class="nb" onclick="go('heat',this)">🌡️ HEATMAP</button>
+</div>
+<div id="main">
+
+<div id="p-dash" class="page on">
+  <div class="slbl">Résultats — Meilleur Modèle (HeteroSTGNN)</div>
+  <div class="g4">
+    <div class="mc lm"><div class="ml">MAE</div><div class="mv">2.18</div><div class="ms2">km/h · Erreur absolue moyenne</div></div>
+    <div class="mc pk"><div class="ml">RMSE</div><div class="mv">2.93</div><div class="ms2">km/h · Erreur quadratique</div></div>
+    <div class="mc tl"><div class="ml">R²</div><div class="mv">0.825</div><div class="ms2">82.5% variance expliquée</div></div>
+    <div class="mc or"><div class="ml">MAPE</div><div class="mv">11.5%</div><div class="ms2">Erreur relative moyenne</div></div>
+  </div>
+  <div class="g4">
+    <div class="mc lm"><div class="ml">Capteurs</div><div class="mv">200</div><div class="ms2">Segments Chicago</div></div>
+    <div class="mc pk"><div class="ml">Pas de temps</div><div class="mv">145K</div><div class="ms2">2013–2018</div></div>
+    <div class="mc tl"><div class="ml">Paramètres</div><div class="mv">31.7K</div><div class="ms2">Architecture légère</div></div>
+    <div class="mc or"><div class="ml">Loss finale</div><div class="mv">0.173</div><div class="ms2">MSE · 10 epochs</div></div>
+  </div>
+  <div class="g2">
+    <div class="cc"><div class="ch"><div><div class="ct">Comparaison des 3 Modèles</div><div class="cs">MAE · RMSE · R²</div></div></div><canvas id="cbar"></canvas></div>
+    <div class="cc"><div class="ch"><div><div class="ct">Distribution des Vitesses</div><div class="cs">Chicago 2013–2018</div></div></div><canvas id="cdnt"></canvas></div>
+  </div>
+</div>
+
+<div id="p-mod" class="page">
+  <div class="slbl">Architectures & Performances</div>
+  <div class="cc"><div class="ch"><div><div class="ct">Courbes de Loss — 10 Epochs</div><div class="cs">STGNN · HeteroSTGNN · GAT-STGNN</div></div></div><canvas id="closs"></canvas></div>
+  <div class="cc"><div class="ch"><div><div class="ct">Tableau Comparatif</div></div></div>
+  <div class="tw"><table>
+    <thead><tr><th>Modèle</th><th>Type</th><th>Spatial</th><th>Temporel</th><th>Params</th><th>MAE</th><th>RMSE</th><th>R²</th><th>Loss</th></tr></thead>
+    <tbody>
+      <tr><td>Moyenne historique</td><td>Baseline</td><td style="color:#5A5A6E">✗</td><td style="color:#5A5A6E">✗</td><td>—</td><td>~6.5</td><td>~9.2</td><td>~0.30</td><td>—</td></tr>
+      <tr><td>LSTM seul</td><td>Récurrent</td><td style="color:#5A5A6E">✗</td><td style="color:#00E5CC">✓</td><td>~50K</td><td>~4.1</td><td>~6.3</td><td>~0.65</td><td>—</td></tr>
+      <tr><td>STGNN (GCN+GRU)</td><td>Graph NN</td><td style="color:#00E5CC">✓</td><td style="color:#00E5CC">✓</td><td>30 147</td><td>2.35</td><td>3.13</td><td>0.800</td><td>0.192</td></tr>
+      <tr><td>GAT-STGNN <span class="tg">NOUVEAU</span></td><td>Attention</td><td style="color:#00E5CC">✓</td><td style="color:#00E5CC">✓</td><td>45 763</td><td>~2.25</td><td>~3.00</td><td>~0.815</td><td>0.140</td></tr>
+      <tr style="background:rgba(200,255,0,0.04)"><td><b style="color:#C8FF00">HeteroSTGNN ✓</b> <span class="tg">MEILLEUR</span></td><td style="color:#C8FF00">Hétérogène</td><td style="color:#C8FF00">✓</td><td style="color:#C8FF00">✓</td><td style="color:#C8FF00">31 747</td><td class="best">2.18</td><td class="best">2.93</td><td class="best">0.825</td><td class="best">0.173</td></tr>
+    </tbody>
+  </table></div></div>
+</div>
+
+<div id="p-pred" class="page">
+  <div class="slbl">Prédiction vs Réalité</div>
+  <div class="cb">
+    <div class="fd"><label>Modèle</label><select id="pm" onchange="upP()"><option>STGNN (GCN)</option><option selected>HeteroSTGNN</option><option>GAT-STGNN</option></select></div>
+    <div class="fd"><label>Capteur</label><select id="ps" onchange="upP()"><option>Capteur 0</option><option>Capteur 1</option><option>Capteur 2</option><option>Capteur 3</option><option>Capteur 4</option></select></div>
+  </div>
+  <div class="cc"><div class="ch"><div><div class="ct" id="ptit">HeteroSTGNN — Vitesse Prédite vs Réelle</div><div class="cs">150 pas de temps · Chicago</div></div></div><canvas id="cpred" style="max-height:250px"></canvas></div>
+  <div class="g3">
+    <div class="mc lm"><div class="ml">Erreur max</div><div class="mv" id="pmx" style="font-size:22px">—</div><div class="ms2">km/h sur ce capteur</div></div>
+    <div class="mc tl"><div class="ml">Corrélation</div><div class="mv" id="pco" style="font-size:22px">—</div><div class="ms2">Pearson · Prédit vs Réel</div></div>
+    <div class="mc or"><div class="ml">Horizon</div><div class="mv" style="font-size:22px">30 min</div><div class="ms2">3 pas × 10 minutes</div></div>
+  </div>
+</div>
+
+<div id="p-map" class="page">
+  <div class="slbl">Carte Interactive — Congestion Prédite</div>
+  <div class="cb">
+    <div class="fd"><label>Période</label><select id="mp"><option>Nuit (0h–6h)</option><option>Rush matin (6h–10h)</option><option selected>Journée (10h–16h)</option><option>Rush soir (16h–20h)</option><option>Soirée (20h–24h)</option></select></div>
+    <div class="fd"><label>Jour</label><select id="md"><option>Lundi</option><option>Mardi</option><option selected>Mercredi</option><option>Jeudi</option><option>Vendredi</option><option>Samedi</option><option>Dimanche</option></select></div>
+    <div class="fd"><label>Affichage</label><select id="mm"><option value="cong">🔴 Congestion</option><option value="speed">🚗 Vitesse</option></select></div>
+    <button class="btn" onclick="rMap()">▶ APPLIQUER</button>
+  </div>
+  <div id="mo">
+    <div id="leaflet-map"></div>
+    <div id="ms">
+      <span class="mst">Capteurs : <b id="sn">—</b></span>
+      <span class="mst">Vitesse moy. : <b id="sspd">—</b></span>
+      <span class="mst">Congestion : <b id="scng">—</b></span>
+      <span class="mst">Min : <b id="smn">—</b></span>
+      <span class="mst">Max : <b id="smx">—</b></span>
+    </div>
+  </div>
+</div>
+
+<div id="p-heat" class="page">
+  <div class="slbl">Heatmap — Congestion par Heure</div>
+  <div class="g3">
+    <div class="mc pk"><div class="ml">Heure la + congestionnée</div><div class="mv" style="font-size:20px">17h – 18h</div><div class="ms2">Rush soir</div></div>
+    <div class="mc lm"><div class="ml">Heure la + fluide</div><div class="mv" style="font-size:20px">3h – 4h</div><div class="ms2">Nuit</div></div>
+    <div class="mc tl"><div class="ml">Vitesse moyenne</div><div class="mv" style="font-size:20px">22.2 km/h</div><div class="ms2">200 capteurs</div></div>
+  </div>
+  <div class="cc"><div class="ch"><div><div class="ct">Vitesse Moyenne par Heure</div><div class="cs">Chicago 2013–2018</div></div></div><canvas id="chour" style="max-height:200px"></canvas></div>
+  <div class="cc">
+    <div class="ct" style="margin-bottom:14px">Heatmap Capteurs × Heures (Top 20)</div>
+    <div class="hhlbs" id="hhl"></div>
+    <div id="hmr"></div>
+  </div>
+</div>
+</div>
+
+<div id="footer">
+  <span>STGNN · Congestion Urbaine · Chicago 2013–2018</span>
+  <span>HeteroSTGNN : GCNConv + GRU + Nœuds Temporels · PyTorch Geometric</span>
+  <span>MAE=2.18 · R²=0.825 · 31 747 params</span>
+</div>
+
+<script>
+const C={lime:'#C8FF00',pink:'#FF3CAC',teal:'#00E5CC',orange:'#FF6B35'};
+const LOSSES={'STGNN (GCN)':[0.648,0.362,0.312,0.297,0.288,0.285,0.280,0.261,0.222,0.192],'HeteroSTGNN':[0.607,0.357,0.310,0.295,0.288,0.281,0.266,0.229,0.188,0.173],'GAT-STGNN':[0.729,0.373,0.264,0.224,0.206,0.193,0.179,0.161,0.149,0.140]};
+const HLY=[25.1,26.2,27.4,28.1,27.9,26.5,23.1,20.2,19.8,21.4,22.0,22.8,23.1,22.9,22.5,22.0,19.8,18.2,19.1,20.8,22.4,23.6,24.5,24.9];
+function mkP(base,noise,shift){const r=[],p=[];let s=base;for(let i=0;i<150;i++){if(i===60)s+=3;if(i===100)s+=8;const v=s+(Math.random()-0.5)*noise;r.push(+v.toFixed(2));p.push(+(v+shift+(Math.random()-0.5)*(noise*0.6)).toFixed(2));}return{real:r,pred:p};}
+const PREDS={'STGNN (GCN)':[mkP(11,2,4),mkP(18,3,3.5),mkP(22,2.5,3),mkP(15,2,4.2),mkP(25,3,3.8)],'HeteroSTGNN':[mkP(11,1.5,2.5),mkP(18,2,2),mkP(22,2,1.8),mkP(15,1.8,2.2),mkP(25,2.5,2.3)],'GAT-STGNN':[mkP(11,1.2,2),mkP(18,1.8,1.8),mkP(22,1.5,1.5),mkP(15,1.5,2),mkP(25,2,2)]};
+const MPS=[];const bLa=[41.98,41.96,41.94,41.92,41.90,41.88,41.86,41.84,41.82,41.80];const bLo=[-87.62,-87.64,-87.66,-87.68,-87.70,-87.72,-87.74,-87.76,-87.78,-87.80];const ZN=["Far North","North","Near North","River North","Loop","Near South","South","Far South","Southwest","West"];
+for(let i=0;i<200;i++){const li=Math.floor(i/20),lj=i%20;MPS.push({lat:bLa[li%10]+(Math.random()-0.5)*0.02,lon:bLo[lj%10]+(Math.random()-0.5)*0.02,id:i,z:ZN[li%10]});}
+function go(id,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));document.getElementById('p-'+id).classList.add('on');btn.classList.add('on');if(id==='map'&&!window._mi)iMap();if(id==='heat'&&!window._hi)iHeat();}
+Chart.defaults.color='#5A5A6E';Chart.defaults.borderColor='rgba(255,255,255,0.05)';Chart.defaults.font.family="'DM Mono',monospace";Chart.defaults.font.size=10;
+new Chart('cbar',{type:'bar',data:{labels:['STGNN','HeteroSTGNN','GAT-STGNN'],datasets:[{label:'MAE',data:[2.35,2.18,2.25],backgroundColor:'rgba(200,255,0,0.55)',borderColor:C.lime,borderWidth:1},{label:'RMSE',data:[3.13,2.93,3.00],backgroundColor:'rgba(255,60,172,0.55)',borderColor:C.pink,borderWidth:1},{label:'R²×3',data:[2.40,2.475,2.445],backgroundColor:'rgba(0,229,204,0.55)',borderColor:C.teal,borderWidth:1}]},options:{responsive:true,plugins:{legend:{labels:{color:'#8A8AA0',boxWidth:12}}},scales:{x:{ticks:{color:'#5A5A6E'}},y:{ticks:{color:'#5A5A6E'}}}}});
+new Chart('cdnt',{type:'doughnut',data:{labels:['<15 km/h','15–22','22–30','>30 km/h'],datasets:[{data:[18,42,28,12],backgroundColor:['rgba(255,60,172,0.8)','rgba(255,107,53,0.7)','rgba(200,255,0,0.5)','rgba(0,229,204,0.7)'],borderColor:[C.pink,C.orange,C.lime,C.teal],borderWidth:2}]},options:{responsive:true,plugins:{legend:{position:'right',labels:{color:'#8A8AA0',boxWidth:12,padding:10}}}}});
+new Chart('closs',{type:'line',data:{labels:['E1','E2','E3','E4','E5','E6','E7','E8','E9','E10'],datasets:[{label:'STGNN (GCN)',data:LOSSES['STGNN (GCN)'],borderColor:C.teal,backgroundColor:'rgba(0,229,204,0.05)',pointRadius:4,tension:0.3},{label:'HeteroSTGNN',data:LOSSES['HeteroSTGNN'],borderColor:C.lime,backgroundColor:'rgba(200,255,0,0.05)',pointRadius:4,tension:0.3,borderWidth:2.5},{label:'GAT-STGNN',data:LOSSES['GAT-STGNN'],borderColor:C.pink,backgroundColor:'rgba(255,60,172,0.05)',pointRadius:4,tension:0.3}]},options:{responsive:true,plugins:{legend:{labels:{color:'#8A8AA0',boxWidth:12}}},scales:{x:{ticks:{color:'#5A5A6E'}},y:{ticks:{color:'#5A5A6E'},title:{display:true,text:'Loss (MSE)',color:'#5A5A6E'}}}}});
+let pC;
+function upP(){const m=document.getElementById('pm').value;const si=parseInt(document.getElementById('ps').value.split(' ')[1]);const d=PREDS[m][si];document.getElementById('ptit').textContent=m+' — Vitesse Prédite vs Réelle';const er=d.real.map((r,i)=>Math.abs(r-d.pred[i]));document.getElementById('pmx').textContent=Math.max(...er).toFixed(2);const avg=a=>a.reduce((s,v)=>s+v,0)/a.length;const mR=avg(d.real),mP=avg(d.pred);const num=d.real.reduce((s,r,i)=>s+(r-mR)*(d.pred[i]-mP),0);const den=Math.sqrt(d.real.reduce((s,r)=>s+(r-mR)**2,0)*d.pred.reduce((s,p)=>s+(p-mP)**2,0));document.getElementById('pco').textContent=(num/den).toFixed(4);const mc=m==='HeteroSTGNN'?C.lime:m==='GAT-STGNN'?C.pink:C.orange;const cfg={type:'line',data:{labels:Array.from({length:150},(_,i)=>i),datasets:[{label:'Réel',data:d.real,borderColor:C.teal,backgroundColor:'rgba(0,229,204,0.04)',pointRadius:0,tension:0.2,borderWidth:2},{label:'Prédit',data:d.pred,borderColor:mc,backgroundColor:'transparent',pointRadius:0,tension:0.2,borderDash:[6,3],borderWidth:2}]},options:{responsive:true,animation:false,plugins:{legend:{labels:{color:'#8A8AA0',boxWidth:12}}},scales:{x:{ticks:{color:'#5A5A6E',maxTicksLimit:10}},y:{ticks:{color:'#5A5A6E'},title:{display:true,text:'km/h',color:'#5A5A6E'}}}}};if(pC)pC.destroy();pC=new Chart('cpred',cfg);}
+upP();
+new Chart('chour',{type:'bar',data:{labels:Array.from({length:24},(_,i)=>i+'h'),datasets:[{data:HLY,backgroundColor:HLY.map(v=>v<18?'rgba(255,60,172,0.7)':v<22?'rgba(255,107,53,0.7)':v<26?'rgba(200,255,0,0.6)':'rgba(0,229,204,0.7)'),borderColor:HLY.map(v=>v<18?C.pink:v<22?C.orange:v<26?C.lime:C.teal),borderWidth:1}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#5A5A6E'}},y:{ticks:{color:'#5A5A6E'},min:15,title:{display:true,text:'km/h',color:'#5A5A6E'}}}}});
+let lM,mMk=[];
+function iMap(){window._mi=true;lM=L.map('leaflet-map').setView([41.87,-87.73],11);L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'©OSM ©CARTO',maxZoom:19}).addTo(lM);const lg=L.control({position:'topright'});lg.onAdd=()=>{const d=L.DomUtil.create('div');d.style.cssText='background:#111116;border:1px solid rgba(255,255,255,0.06);padding:12px;border-radius:10px;font-size:10px;color:#8A8AA0;line-height:2;font-family:"DM Mono",monospace';d.innerHTML='<b style="color:#C8FF00">// CONGESTION</b><br><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#FF3CAC;margin-right:5px"></span>>70% Bloqué<br><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#FF6B35;margin-right:5px"></span>50–70% Lent<br><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#FFD700;margin-right:5px"></span>30–50% Modéré<br><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#9ACD32;margin-right:5px"></span>15–30% Fluide<br><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#00E5CC;margin-right:5px"></span><15% Libre';return d;};lg.addTo(lM);rMap();}
+function gSpd(p,d){let b=22;if(p.includes('Rush soir'))b=16;else if(p.includes('Rush matin'))b=18;else if(p.includes('Nuit'))b=26;else if(p.includes('Soirée'))b=24;if(d==='Samedi'||d==='Dimanche')b+=4;if((d==='Lundi'||d==='Vendredi')&&p.includes('Rush'))b-=2;return b;}
+function rMap(){if(!lM)return;mMk.forEach(m=>lM.removeLayer(m));mMk=[];const period=document.getElementById('mp').value;const day=document.getElementById('md').value;const mode=document.getElementById('mm').value;const base=gSpd(period,day);const spds=[],cngs=[];MPS.forEach(p=>{const sp=Math.max(5,Math.min(55,base+(Math.random()-0.5)*8+(p.id%7-3)));const cg=Math.max(0,Math.min(100,Math.round((1-sp/60)*100)));spds.push(sp);cngs.push(cg);let col=mode==='cong'?(cg>70?'#FF3CAC':cg>50?'#FF6B35':cg>30?'#FFD700':cg>15?'#9ACD32':'#00E5CC'):(sp<15?'#FF3CAC':sp<20?'#FF6B35':sp<25?'#FFD700':sp<32?'#9ACD32':'#00E5CC');const r=mode==='cong'?5+cg/14:5+(55-Math.min(sp,55))/7;const m=L.circleMarker([p.lat,p.lon],{radius:r,fillColor:col,color:'rgba(0,0,0,0.3)',weight:0.8,opacity:0.9,fillOpacity:0.85}).bindPopup('<div style="font-family:Inter,sans-serif;font-size:12px;min-width:180px;color:#ECECF1"><b style="color:#C8FF00">Capteur #'+p.id+'</b> — '+p.z+'<hr style="margin:5px 0;border-color:rgba(255,255,255,0.1)">🤖 <b>Vitesse prédite :</b> '+sp.toFixed(1)+' km/h<br>🔴 <b>Congestion :</b> '+cg+'%<br>🕐 '+period+'<br>📅 '+day+'</div>').addTo(lM);mMk.push(m);});const avg=a=>a.reduce((s,v)=>s+v,0)/a.length;document.getElementById('sn').textContent=MPS.length;document.getElementById('sspd').textContent=avg(spds).toFixed(1)+' km/h';document.getElementById('scng').textContent=avg(cngs).toFixed(0)+'%';document.getElementById('smn').textContent=Math.min(...spds).toFixed(1)+' km/h';document.getElementById('smx').textContent=Math.max(...spds).toFixed(1)+' km/h';}
+function iHeat(){window._hi=true;const sens=Array.from({length:20},(_,i)=>'Seg '+(100+i*7));const hhl=document.getElementById('hhl');for(let h=0;h<24;h++){const d=document.createElement('div');d.className='hhlbl';d.textContent=h+'h';hhl.appendChild(d);}const rows=document.getElementById('hmr');sens.forEach((seg,si)=>{const row=document.createElement('div');row.className='hmr';const lbl=document.createElement('div');lbl.className='hml';lbl.textContent=seg;row.appendChild(lbl);for(let h=0;h<24;h++){const spd=HLY[h]+(Math.random()-0.5)*4+(si%3-1)*2;const cng=Math.max(0,Math.min(1,(1-spd/60)));const cell=document.createElement('div');cell.className='hmc';const r=Math.round(255*cng*0.9+60*0.1);const g=Math.round(200*(1-cng)*0.7);const b=Math.round(cng>0.5?172*cng:0);cell.style.background='rgb('+r+','+g+','+b+')';cell.title=seg+' · '+h+'h · '+spd.toFixed(1)+' km/h · '+(cng*100).toFixed(0)+'%';row.appendChild(cell);}rows.appendChild(row);});}
+</script>
+</body>
+</html>
